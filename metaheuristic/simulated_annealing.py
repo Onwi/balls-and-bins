@@ -7,25 +7,17 @@ def parse_input_file(file_path):  ## Lê o arquivo de entrada e extrai as inform
 
     instances = []
     with open(file_path, 'r') as f:
+        bins = int(f.readline()) # pega a quantidade de bins presente no arquivo
+        balls = int(f.readline()) # pega a quantidade de balls presente no arquivo
         while True:
-            line = f.readline().strip()
+            line = f.readline()
             if not line:
                 break
-            num_items = int(line)  # Quantidade de itens
-            num_groups = int(f.readline().strip())  # Quantidade de grupos
-            max_capacity = int(f.readline().strip())  # Capacidade máxima da mochila
-            group_sizes = list(map(int, f.readline().strip().split()))  # Tamanhos dos grupos
-
-            items = []
-            for _ in range(num_items):
-                line = f.readline().strip()
-                if line:
-                    weight, profit, group = map(int, line.split())
-                    items.append((weight, profit, group))  # Adiciona o item (peso, lucro, grupo) na lista
-
-            instances.append((max_capacity, num_items, items))
+            nums = line.split(' ');
+            instance = [int(nums[0]), int(nums[1])] # instancia [lowerBound, upperBound]
+            instances.append(instance)
     
-    return instances
+    return instances, bins, balls
 
 def evaluate_solution(solution, items, capacity): #Avaliamos a solução e verificamos o lucro mínimo entre os grupos sem ultrapassar a capacidade da mochila.
 
@@ -104,14 +96,17 @@ def main():
     seed = int(sys.argv[2])
     max_iterations = int(sys.argv[3])
     
-    instances = parse_input_file(input_file)
-    
-    for idx, (capacity, num_items, items) in enumerate(instances):
-        print(f"Resolvendo instância {idx + 1}...")
-        best_solution, best_value = simulated_annealing(capacity, num_items, items, seed, max_iterations)
-        print(f"Melhor Solução: {best_solution}")
-        print(f"Melhor Valor: {best_value}")
-        print("")
+    instances, bins, balls = parse_input_file(input_file)
+    print(f'Dados da instância ${input_file}')
+    print(f'Número de bins {bins}\nNúmero de balls {balls}')
+    print('Instâncias: ')
+    print(instances)
+#    for idx, (capacity, num_items, items) in enumerate(instances):
+#        print(f"Resolvendo instância {idx + 1}...")
+#        best_solution, best_value = simulated_annealing(capacity, num_items, items, seed, max_iterations)
+#        print(f"Melhor Solução: {best_solution}")
+#        print(f"Melhor Valor: {best_value}")
+#        print("")
 
 if __name__ == "__main__":
     main()

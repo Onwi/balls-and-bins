@@ -64,42 +64,41 @@ def create_initial_solution(bins, balls, instances):
         index += 1
     return initial_solution
 
-def simulated_annealing(bins, balls, instances, seed, max_iterations): # Algoritmo de Simulated Annealing para encontrar a melhor solução para o problema da mochila.
+def simulated_annealing(bins,balls, instances, seed, max_iterations): # Algoritmo de Simulated Annealing para encontrar a melhor solução para o problema da mochila.
     random.seed(seed)
-    
-    current_solution = create_initial_solution(bins, balls, instances)
+    current_solution = create_initial_solution(bins,balls, instances)
     best_solution = current_solution[:]
-    best_value = evaluate_solution(best_solution, instances)
-
+    best_value = evaluate_solution(current_solution, instances)
+    
     temperature = 1.0
     min_temperature = 0.00001
-    cooling_rate = 0.95
+    cooling_rate = 0.9
     
     start_time = time.time()
-
-    while temperature > min_temperature or max_iterations > 0:
-        neighbor = get_neighbor(current_solution, instances)
-        current_value = evaluate_solution(current_solution, instances)
-        neighbor_value = evaluate_solution(neighbor, instances)
-        # Se a solução vizinha for melhor ou passar no teste de probabilidade, adotamos ela
-        if (neighbor_value > current_value or 
-            random.uniform(0, 1) < math.exp((neighbor_value - current_value) / temperature)):
-            current_solution = neighbor[:]
-            current_value = neighbor_value
+    while temperature > min_temperature and max_iterations > 0:
+        for _ in range(100):
+            neighbor = get_neighbor(current_solution, instances)
+            current_value = evaluate_solution(current_solution, instances)
+            neighbor_value = evaluate_solution(neighbor, instances)
             
-            # Atualiza a melhor solução encontrada
-            if current_value > best_value:
-                best_solution = current_solution[:]
-                best_value = current_value
-                elapsed_time = time.time() - start_time
-                print(f"{elapsed_time:.2f}s: Melhor valor até agora = {best_value}")
-    
+            # Se a solução vizinha for melhor ou passar no teste de probabilidade, adotamos ela
+            if (neighbor_value > current_value or 
+                random.uniform(0, 1) < math.exp((neighbor_value - current_value) / temperature)):
+                current_solution = neighbor[:]
+                current_value = neighbor_value
+                
+                # Atualiza a melhor solução encontrada
+                if current_value > best_value:
+                    best_solution = current_solution[:]
+                    best_value = current_value
+                    elapsed_time = time.time() - start_time
+                    print(f"{elapsed_time:.2f}s: Melhor valor até agora = {best_value}, Solução = {best_solution}")
+        
         temperature *= cooling_rate
-        max_iterations -= 1;
-    
+        max_iterations -= 1
+        
     total_time = time.time() - start_time
     print(f"Tempo total de execução: {total_time:.2f}s")
-
     return best_solution, best_value
 
 def main():

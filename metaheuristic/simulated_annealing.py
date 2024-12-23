@@ -69,7 +69,7 @@ def simulated_annealing(bins,balls, instances, seed, max_iterations): # Algoritm
     current_solution = create_initial_solution(bins,balls, instances)
     best_solution = current_solution[:]
     best_value = evaluate_solution(current_solution, instances)
-    
+    print(f'Solução inicial {best_value}')
     temperature = 100.0
     min_temperature = 0.0001
     cooling_rate = 0.9

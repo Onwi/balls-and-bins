@@ -41,8 +41,8 @@ def get_neighbor(solution, instances): # Gera uma nova solução (vizinha) alter
         to_bin = random.randint(0, len(solution) - 1)
 
 
-    solution[from_bin] -= 1
-    solution[to_bin] += 1
+    solution[from_bin] -= 5
+    solution[to_bin] += 5
 
     return solution
 
@@ -70,36 +70,35 @@ def simulated_annealing(bins,balls, instances, seed, max_iterations): # Algoritm
     best_solution = current_solution[:]
     best_value = evaluate_solution(current_solution, instances)
     
-    temperature = 1.0
-    min_temperature = 0.00001
+    temperature = 100.0
+    min_temperature = 0.0001
     cooling_rate = 0.9
     
     start_time = time.time()
-    while temperature > min_temperature and max_iterations > 0:
-        for _ in range(100):
-            neighbor = get_neighbor(current_solution, instances)
-            current_value = evaluate_solution(current_solution, instances)
+    while temperature > min_temperature and max_iterations != 0:
+        for _ in range(200):
+            neighbor = get_neighbor(current_solution[:], instances)
             neighbor_value = evaluate_solution(neighbor, instances)
-            
-            # Se a solução vizinha for melhor ou passar no teste de probabilidade, adotamos ela
-            if (neighbor_value > current_value or 
-                random.uniform(0, 1) < math.exp((neighbor_value - current_value) / temperature)):
-                current_solution = neighbor[:]
-                current_value = neighbor_value
-                
-                # Atualiza a melhor solução encontrada
-                if current_value > best_value:
-                    best_solution = current_solution[:]
-                    best_value = current_value
-                    elapsed_time = time.time() - start_time
-                    print(f"{elapsed_time:.2f}s: Melhor valor até agora = {best_value}, Solução = {best_solution}")
-        
+            current_value = evaluate_solution(current_solution, instances)
+
+            delta = current_value - neighbor_value
+
+            if(neighbor_value != 0):
+                if (delta <= 0 or random.random() < math.exp(-delta / temperature) ):
+                    current_solution = neighbor[:]
+
+            if(current_value >= best_value):
+                best_solution = current_solution
+                best_value = current_value
+
         temperature *= cooling_rate
         max_iterations -= 1
-        
+
     total_time = time.time() - start_time
     print(f"Tempo total de execução: {total_time:.2f}s")
+    print(best_value)
     return best_solution, best_value
+        
 
 def main():
     if len(sys.argv) < 4:
@@ -115,9 +114,7 @@ def main():
     print(f'Número de bins {bins}\nNúmero de balls {balls}')
 
     best_solution, best_value = simulated_annealing(bins, balls, instances, seed, max_iterations)
-    # print(f"Melhor Solução: {best_solution}")
     print(f"Melhor Valor: {best_value}")
-    # print("")
 
 if __name__ == "__main__":
     main()

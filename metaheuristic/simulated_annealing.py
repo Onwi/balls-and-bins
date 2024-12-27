@@ -13,7 +13,7 @@ def parse_input_file(file_path):  ## Lê o arquivo de entrada e extrai as inform
             line = f.readline()
             if not line:
                 break
-            nums = line.split(' ');
+            nums = line.split(' ')
             instance = [int(nums[0]), int(nums[1])] # instancia [lowerBound, upperBound]
             instances.append(instance)
     
@@ -64,18 +64,23 @@ def create_initial_solution(bins, balls, instances):
         index += 1
     return initial_solution
 
-def simulated_annealing(bins,balls, instances, seed, max_iterations): # Algoritmo de Simulated Annealing para encontrar a melhor solução para o problema da mochila.
+def simulated_annealing(bins, balls, instances, seed, max_iterations, max_time):
     random.seed(seed)
-    current_solution = create_initial_solution(bins,balls, instances)
+    start_time = time.time()
+
+    current_solution = create_initial_solution(bins, balls, instances)
     best_solution = current_solution[:]
     best_value = evaluate_solution(current_solution, instances)
-    print(f'Solução inicial {best_value}')
+
     temperature = 100.0
-    min_temperature = 0.0001
-    cooling_rate = 0.9
-    
-    start_time = time.time()
+    min_temperature = 0.000001
+    cooling_rate = 0.99
+
+    total_time = 0
     while temperature > min_temperature and max_iterations != 0:
+        total_time = time.time() - start_time
+        if total_time >= max_time:
+            break
         for _ in range(200):
             neighbor = get_neighbor(current_solution[:], instances)
             neighbor_value = evaluate_solution(neighbor, instances)
@@ -83,38 +88,52 @@ def simulated_annealing(bins,balls, instances, seed, max_iterations): # Algoritm
 
             delta = current_value - neighbor_value
 
-            if(neighbor_value != 0):
-                if (delta <= 0 or random.random() < math.exp(-delta / temperature) ):
+            if neighbor_value != 0:
+                if delta <= 0 or random.random() < math.exp(-delta / temperature):
                     current_solution = neighbor[:]
-
-            if(current_value >= best_value):
-                best_solution = current_solution
+            if current_value >= best_value:
+                best_solution = current_solution[:]
                 best_value = current_value
 
         temperature *= cooling_rate
         max_iterations -= 1
 
     total_time = time.time() - start_time
-    print(f"Tempo total de execução: {total_time:.2f}s")
-    print(best_value)
-    return best_solution, best_value
-        
+
+    return {
+        "initial_solution_value": evaluate_solution(create_initial_solution(bins, balls, instances), instances),
+        "best_solution_value": best_value,
+        "execution_time": total_time,
+        "max_time": max_time,
+        "iterations_remaining": max_iterations,
+        "final_temperature": temperature
+    }
 
 def main():
-    if len(sys.argv) < 4:
-        print("Uso: python simulated_annealing.py <arquivo_entrada> <seed> <max_iterações>")
+    if len(sys.argv) != 5:
+        print("Uso: python simulated_annealing.py <arquivo_entrada> <seed> <max_iterações> <max_time>")
         return
-    
+
     input_file = sys.argv[1]
     seed = int(sys.argv[2])
     max_iterations = int(sys.argv[3])
-    
-    instances, bins, balls = parse_input_file(input_file)
-    print(f'Dados da instância ${input_file}')
-    print(f'Número de bins {bins}\nNúmero de balls {balls}')
+    max_time = int(sys.argv[4])
 
-    best_solution, best_value = simulated_annealing(bins, balls, instances, seed, max_iterations)
-    print(f"Melhor Valor: {best_value}")
+    instances, bins, balls = parse_input_file(input_file)
+    print(f'Dados da instância: {input_file}')
+    print(f'Número de bins: {bins}\nNúmero de balls: {balls}')
+
+    results = simulated_annealing(bins, balls, instances, seed, max_iterations, max_time)
+
+    print("\nResultados:")
+    print(f"Nome da instância: {input_file}")
+    print(f"Semente de aleatoriedade: {seed}")
+    print(f"Valor da solução inicial: {results['initial_solution_value']}")
+    print(f"Melhor valor da solução encontrada: {results['best_solution_value']}")
+    print(f"Tempo total de execução: {results['execution_time']:.2f}s")
+    print(f"Tempo limite superior: {results['max_time']}s")
+    print(f"Temperatura final: {results['final_temperature']:.6f}")
+    print(f"Iterações restantes: {results['iterations_remaining']}")
 
 if __name__ == "__main__":
     main()

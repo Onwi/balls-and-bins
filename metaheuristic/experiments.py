@@ -4,7 +4,7 @@ import os
 
 def run_simulated_annealing(instances_dir, output_csv, max_iterations, max_times):
     seeds = range(3, 8)  # Sementes
-    instances = [f"{i:02d}.txt" for i in range(10, 11)]  # Instâncias de 01.txt a 10.txt
+    instances = [f"{i:02d}.txt" for i in range(1, 11)]  # Instâncias de 01.txt a 10.txt
     results = []
 
     for instance in instances:
@@ -27,7 +27,7 @@ def run_simulated_annealing(instances_dir, output_csv, max_iterations, max_times
                     best_value = float(lines[8].split(":")[1].strip())
                     total_time = float(lines[9].split(":")[1].strip().replace("s", ""))
                     max_time = int(lines[10].split(":")[1].strip().replace("s", ""))
-                    formulation_value, formulation_time = formulation(instance)
+                    formulation_value, formulation_time = formulation()
                     
                     # Adiciona os resultados
                     results.append([
@@ -47,18 +47,14 @@ def run_simulated_annealing(instances_dir, output_csv, max_iterations, max_times
         writer.writerows(results)
     print(f"Resultados salvos no arquivo {output_csv}.")
 
-def formulation(instance):
-    if(instance == '01.txt'):
-        return 3, 6
-    if(instance == '02.txt'):
-        return 2, 7
+def formulation():
     return 0,0
 
 # Configuração de execução
-instances_dir = "..\\instancias"  # Substitua pelo caminho correto
+instances_dir = "..\\instancias" 
 output_csv = "resultados.csv"
 max_iterations = 1000
-max_times = [1, 2]  # Tempo máximo de 5 e 300 segundos
+max_times = [5, 300]  # Tempo máximo de 5 e 300 segundos
 
 
 # Executa o script

@@ -24,12 +24,14 @@ end
 
 arquivo = ARGS[1]
 seed_parametro = parse(Int, ARGS[2])
+tempo = parse(Int, ARGS[3])
 
 function resolver_problema(arquivo)
     n, m, limites_inferiores, limites_superiores = ler_instancia(arquivo)
     
     model = Model(HiGHS.Optimizer)
     set_attribute(model, "random_seed", seed_parametro)
+    set_time_limit_sec(model, tempo)
     
     # Xi e Yik
     @variable(model, x[1:n], Int, lower_bound=0)
@@ -55,10 +57,12 @@ function resolver_problema(arquivo)
     
     # pegar valor ótimo
     status = termination_status(model)
+    upper = objective_bound(model)
     if status == MOI.OPTIMAL
-        println("Lucro máximo: ", objective_value(model))
+        println("sucesso: $status")
     else
         println("erro ao tentar otimizar: $status")
+        println("upper: $upper")
     end
 end
 

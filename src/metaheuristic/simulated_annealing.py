@@ -3,7 +3,7 @@ import random
 import time
 import math
 
-def parse_input_file(file_path):  ## Lê o arquivo de entrada e extrai as informações sobre os itens e as mochilas.
+def parse_input_file(file_path):  ## Lê o arquivo de entrada e extrai as informações.
 
     instances = []
     with open(file_path, 'r') as f:
@@ -19,7 +19,7 @@ def parse_input_file(file_path):  ## Lê o arquivo de entrada e extrai as inform
     
     return instances, bins, balls
 
-def evaluate_solution(solution, instances): #Avaliamos a solução e verificamos o lucro mínimo entre os grupos sem ultrapassar a capacidade da mochila.
+def evaluate_solution(solution, instances): #Avaliamos a solução.
     best_value = 0
 
     for index, ball in enumerate(solution):
@@ -30,7 +30,7 @@ def evaluate_solution(solution, instances): #Avaliamos a solução e verificamos
 
     return best_value 
 
-def get_neighbor(solution, instances): # Gera uma nova solução (vizinha) alterando aleatoriamente a inclusão de um item da solução atual.()
+def get_neighbor(solution, instances): # Gera uma nova solução.
     from_bin = random.randint(0, len(solution) - 1)
     to_bin = random.randint(0, len(solution) - 1)
 

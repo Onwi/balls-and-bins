@@ -1,0 +1,9 @@
+# Como rodar:
+python .\metaheuristic\simulated_annealing.py <arquivo_entrada> <seed> <max_iterações> <max_time>
+
+Ex: 
+python .\metaheuristic\simulated_annealing.py .\instancias\01.txt 2 3000 30
+
+Versão python:
+Acredito que rodará com qualquer uma, mas se precisar a 3.10.11 é garantido que funcionará.
+
